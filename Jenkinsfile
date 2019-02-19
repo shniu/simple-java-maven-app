@@ -32,7 +32,7 @@ pipeline {
 
         stage('Run docker') {
             agent {
-                label 'master'
+                label 'ubuntu'
             }
             steps {
                 sh 'docker run hello-world'
