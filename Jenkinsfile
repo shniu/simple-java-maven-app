@@ -19,5 +19,6 @@ pipeline {
 	sh './echo.sh'
       }
     }
+  }
 }
 
