@@ -13,10 +13,14 @@ pipeline {
                 sh 'mvn -B -DskipTests clean package'
             }
         }
-        stage('Echo') {
+        stage('Test') {
             steps {
-                sh 'chmod +x ./echo.sh'
-                sh './echo.sh'
+                sh 'mvn test'
+            }
+            post {
+                always {
+                    junit 'target/surefire-reports/*.xml'
+                }
             }
         }
     }
