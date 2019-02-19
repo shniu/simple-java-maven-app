@@ -27,6 +27,11 @@ pipeline {
         stage('Deliver') {
             steps {
                 sh './jenkins/scripts/deliver.sh'
+            }
+        }
+
+        stage('Run docker') {
+            steps {
                 sh 'docker run hello-world'
             }
         }
