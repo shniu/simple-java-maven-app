@@ -10,6 +10,8 @@ pipeline {
     }*/
 
     environment {
+        MAVEN_JDK_IMAGE = 'maven:3.6-jdk-8'
+
         PROJECT_VERSION = readMavenPom(file: 'pom.xml').getVersion()
         PROJECT_ARITFACT_ID = readMavenPom(file: 'pom.xml').getArtifactId()
     }
@@ -18,20 +20,25 @@ pipeline {
         stage('Build') {
             agent {
                 docker {
-                    image 'maven:3-alpine'
-                    args '-v /home/blockchain/.m2:/root/.m2'
+                    // image 'maven:3-alpine'
+                    image "${env.MAVEN_JDK_IMAGE}"
+                    reuseNode true
+                    args '-v ${HOME}/.m2:/root/.m2'
                 }
             }
             steps {
                 sh 'mvn -B -DskipTests clean package'
+                sh '>>>> java -version'
                 echo ">>>> Project version: ${env.PROJECT_VERSION} and ${env.BRANCH_NAME} and ${PROJECT_ARITFACT_ID}"
             }
         }
         stage('Test') {
             agent {
                 docker {
-                    image 'maven:3-alpine'
-                    args '-v /home/blockchain/.m2:/root/.m2'
+                    // image 'maven:3-alpine'
+                    image "${env.MAVEN_JDK_IMAGE}"
+                    reuseNode true
+                    args '-v ${HOME}/.m2:/root/.m2'
                 }
             }
             steps {
@@ -47,8 +54,10 @@ pipeline {
         stage('Deliver') {
             agent {
                 docker {
-                    image 'maven:3-alpine'
-                    args '-v /home/blockchain/.m2:/root/.m2'
+                    // image 'maven:3-alpine'
+                    image "${env.MAVEN_JDK_IMAGE}"
+                    reuseNode true
+                    args '-v ${HOME}/.m2:/root/.m2'
                 }
             }
             steps {
