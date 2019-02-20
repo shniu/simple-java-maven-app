@@ -23,7 +23,7 @@ pipeline {
             }
             steps {
                 sh 'mvn -B -DskipTests clean package'
-                sh '>>>> Project version: ${env.PROJECT_VERSION}'
+                sh '>>>> Project version: ${PROJECT_VERSION} and ${env.BRANCH_NAME}'
             }
         }
         stage('Test') {
