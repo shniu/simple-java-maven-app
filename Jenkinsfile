@@ -10,7 +10,7 @@ pipeline {
     }*/
 
     environment {
-        PROJECT_VERSION = readMavenPom().getVersion()
+        // PROJECT_VERSION = readMavenPom().getVersion()
     }
 
     stages {
