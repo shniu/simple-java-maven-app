@@ -11,6 +11,7 @@ pipeline {
 
     environment {
         PROJECT_VERSION = readMavenPom(file: 'pom.xml').getVersion()
+        PROJECT_ARITFACT_ID = readMavenPom(file: 'pom.xml').getArtifactId()
     }
 
     stages {
@@ -23,7 +24,7 @@ pipeline {
             }
             steps {
                 sh 'mvn -B -DskipTests clean package'
-                echo ">>>> Project version: ${env.PROJECT_VERSION} and ${env.BRANCH_NAME}"
+                echo ">>>> Project version: ${env.PROJECT_VERSION} and ${env.BRANCH_NAME} and ${PROJECT_ARITFACT_ID}"
             }
         }
         stage('Test') {
