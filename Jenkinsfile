@@ -9,6 +9,10 @@ pipeline {
         }
     }*/
 
+    environment {
+        PROJECT_VERSION = readMavenPom().getVersion()
+    }
+
     stages {
         stage('Build') {
             agent {
@@ -19,6 +23,7 @@ pipeline {
             }
             steps {
                 sh 'mvn -B -DskipTests clean package'
+                sh '>>>> Project version: ${env.PROJECT_VERSION}'
             }
         }
         stage('Test') {
