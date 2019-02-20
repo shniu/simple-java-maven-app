@@ -28,7 +28,7 @@ pipeline {
             }
             steps {
                 sh 'mvn -B -DskipTests clean package'
-                sh '>>>> java -version'
+                sh 'java -version'
                 echo ">>>> Project version: ${env.PROJECT_VERSION} and ${env.BRANCH_NAME} and ${PROJECT_ARITFACT_ID}"
             }
         }
