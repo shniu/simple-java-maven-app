@@ -24,9 +24,22 @@ pipeline {
 
         HOSTS = "192.168.1.42,192.168.1.38,192.168.1.131"
         HELLO_WORLD = 'hello-world'
+
+        PASSWD_FILE = 'epuchain.txt'
     }
 
     stages {
+        stage('Prepare') {
+            stage {
+                script {
+                    if (!fileExists(file:  env.PASSWD_FILE)) {
+                        dir('~/.docker') {
+                            fileOperations([fileCopyOperation(excludes: '', flattenFiles: true, includes: "${env.PASSWD_FILE}", targetLocation: "${WORKSPACE}")])
+                        }
+                    }
+                }
+            }
+        }
         stage('Build') {
             agent {
                 docker {
@@ -118,7 +131,7 @@ def sshRemoteDockerPull(host, imageTag) {
         remote.password = password
 
         sshCommand(remote: remote, command: 'mkdir -p ~/.docker')
-        sshPut remote: remote, from: '~/.docker/epuchain.txt', into: '~/.docker'
+        sshPut remote: remote, from: 'epuchain.txt', into: '~/.docker'
 
         writeFile file: 'abc.sh', text: """
             cat ~/.docker/epuchain.txt | docker login --username=epuchain registry.cn-beijing.aliyuncs.com --password-stdin
