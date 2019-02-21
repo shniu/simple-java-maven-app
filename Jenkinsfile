@@ -32,7 +32,7 @@ pipeline {
         stage('Prepare') {
             steps {
                 script {
-                    def home = sh(returnStdout: true, script: 'echo ${HOME}')
+                    def home = sh(returnStdout: true, script: 'env | grep ^HOME= | cut -c 6-')
                     echo "----- $home"
                     if (!fileExists(file:  env.PASSWD_FILE)) {
                         dir("$home/.docker") {
@@ -136,9 +136,10 @@ def sshRemoteDockerPull(host, imageTag) {
         remote.password = password
 
         sshCommand(remote: remote, command: 'mkdir -p ~/.docker && touch ~/.docker/epuchain.txt')
-        dir("/home/blockchain/.docker") {
-            sshPut remote: remote, from: 'epuchain.txt', into: '~/.docker'
-        }
+        /*dir("/home/blockchain/.docker") {
+
+        }*/
+        sshPut remote: remote, from: 'echo.sh', into: '~/.docker'
 
         writeFile file: 'abc.sh', text: """
             cat ~/.docker/epuchain.txt | docker login --username=epuchain registry.cn-beijing.aliyuncs.com --password-stdin
