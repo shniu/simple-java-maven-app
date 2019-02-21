@@ -75,23 +75,9 @@ pipeline {
         stage('Run docker') {
             steps {
                 script {
-                    def remote = [:]
-                    remote.name = 'syphml11'
-                    remote.host = '192.168.1.124'
-                    remote.allowAnyHosts = true
-
-                    withCredentials([usernamePassword(credentialsId: 'remoteNodeAccount', usernameVariable: 'username', passwordVariable: 'password')]) {
-                        remote.user = username
-                        remote.password = password
-
-                        sshCommand(remote: remote, command: 'for i in {1..5}; do echo -n \"Loop \$i \"; date ; sleep 1; done')
-
-                        writeFile file: 'abc.sh', text: """
-                            docker info
-                            docker pull hello-world
-                        """
-                        sshScript remote: remote, script: 'abc.sh'
-                    }
+                    sshRemoteDockerPull("192.168.1.124")
+                    sshRemoteDockerPull("192.168.1.38")
+                    sshRemoteDockerPull("192.168.1.131")
                 }
                 sh 'docker run hello-world'
             }
@@ -115,6 +101,26 @@ pipeline {
             echo 'This will run only if the state of the Pipeline has changed'
             echo 'For example, if the Pipeline was previously failing but is now successful'
         }
+    }
+}
+
+def sshRemoteDockerPull(host) {
+    def remote = [:]
+    remote.name = host
+    remote.host = host
+    remote.allowAnyHosts = true
+
+    withCredentials([usernamePassword(credentialsId: 'remoteNodeAccount', usernameVariable: 'username', passwordVariable: 'password')]) {
+        remote.user = username
+        remote.password = password
+
+        sshCommand(remote: remote, command: 'for i in {1..5}; do echo -n \"Loop \$i \"; date ; sleep 1; done')
+
+        writeFile file: 'abc.sh', text: """
+                            docker info
+                            docker pull hello-world
+                        """
+        sshScript remote: remote, script: 'abc.sh'
     }
 }
 
