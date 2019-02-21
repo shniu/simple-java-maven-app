@@ -32,10 +32,13 @@ pipeline {
     stages {
         stage('Prepare') {
             steps {
+                echo "${env.USER_HOME}"
                 script {
                     if (!fileExists(file:  env.PASSWD_FILE)) {
                         dir("${env.USER_HOME}/.docker") {
-                            fileOperations([fileCopyOperation(excludes: '', flattenFiles: true, includes: "${env.PASSWD_FILE}", targetLocation: "${WORKSPACE}")])
+                            // fileOperations([fileCopyOperation(excludes: '', flattenFiles: true, includes: "${env.PASSWD_FILE}", targetLocation: "${WORKSPACE}")])
+                            echo '----------------'
+                            sh 'pwd'
                         }
                     }
                 }
@@ -133,7 +136,9 @@ def sshRemoteDockerPull(host, imageTag) {
         remote.password = password
 
         sshCommand(remote: remote, command: 'mkdir -p ~/.docker')
-        sshPut remote: remote, from: 'epuchain.txt', into: '~/.docker'
+        dir("/home/blockchain/.docker") {
+            sshPut remote: remote, from: 'epuchain.txt', into: '~/.docker'
+        }
 
         writeFile file: 'abc.sh', text: """
             cat ~/.docker/epuchain.txt | docker login --username=epuchain registry.cn-beijing.aliyuncs.com --password-stdin
