@@ -26,7 +26,7 @@ pipeline {
         HELLO_WORLD = 'hello-world'
 
         PASSWD_FILE = 'epuchain.txt'
-        USER_HOME = sh(returnStdout: true, script: 'echo $HOME')
+        USER_HOME = sh(returnStdout: true, script: 'echo ${HOME}')
     }
 
     stages {
