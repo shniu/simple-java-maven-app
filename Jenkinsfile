@@ -1,6 +1,8 @@
 pipeline {
 
-    agent any
+    agent {
+        label 'ubuntu'
+    }
 
     /*agent {
         docker {
@@ -71,9 +73,6 @@ pipeline {
         }
 
         stage('Run docker') {
-            agent {
-                label 'ubuntu'
-            }
             steps {
                 script {
                     def remote = [:]
@@ -86,6 +85,12 @@ pipeline {
                         remote.password = password
 
                         sshCommand(remote: remote, command: 'for i in {1..5}; do echo -n \"Loop \$i \"; date ; sleep 1; done')
+
+                        writeFile file: 'abc.sh', text: """
+                            docker info
+                            docker pull hello-world
+                        """
+                        sshScript remote: remote, script: 'abc.sh'
                     }
                 }
                 sh 'docker run hello-world'
