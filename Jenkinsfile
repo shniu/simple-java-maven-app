@@ -26,6 +26,7 @@ pipeline {
         HELLO_WORLD = 'hello-world'
 
         PASSWD_FILE = 'epuchain.txt'
+        USER_HOME = sh(returnStdout: true, script: 'echo $HOME')
     }
 
     stages {
@@ -33,7 +34,7 @@ pipeline {
             steps {
                 script {
                     if (!fileExists(file:  env.PASSWD_FILE)) {
-                        dir('~/.docker') {
+                        dir("${env.USER_HOME}/.docker") {
                             fileOperations([fileCopyOperation(excludes: '', flattenFiles: true, includes: "${env.PASSWD_FILE}", targetLocation: "${WORKSPACE}")])
                         }
                     }
