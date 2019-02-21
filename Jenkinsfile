@@ -14,6 +14,11 @@ pipeline {
 
         PROJECT_VERSION = readMavenPom(file: 'pom.xml').getVersion()
         PROJECT_ARITFACT_ID = readMavenPom(file: 'pom.xml').getArtifactId()
+
+        // Just demo
+        PWD_DIR = sh(returnStdout: true, script: 'pwd').trim()
+        // 可以当做 CI 环境下构建镜像时的版本号
+        LATEST_COMMIT = sh(returnStdout: true, script: "git log -n 1 --pretty=format:'%h'").trim()
     }
 
     stages {
@@ -70,6 +75,19 @@ pipeline {
                 label 'ubuntu'
             }
             steps {
+                script {
+                    def remote = [:]
+                    remote.name = 'syphml11'
+                    remote.host = '192.168.1.124'
+                    remote.allowAnyHosts = true
+
+                    withCredentials([usernamePassword(credentialsId: 'remoteNodeAccount', usernameVariable: 'username', passwordVariable: 'password')]) {
+                        remote.user = username
+                        remote.password = password
+
+                        sshCommand(remote: remote, command: 'for i in {1..5}; do echo -n \"Loop \$i \"; date ; sleep 1; done')
+                    }
+                }
                 sh 'docker run hello-world'
             }
         }
