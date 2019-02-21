@@ -27,6 +27,7 @@ pipeline {
                 "192.168.1.38",
                 "192.168.1.131"
         ]
+        HELLO_WORLD = 'hello-world'
     }
 
     stages {
@@ -82,7 +83,7 @@ pipeline {
             steps {
                 script {
                     for (host in HOSTS) {
-                        sshRemoteDockerPull(host)
+                        sshRemoteDockerPull(host, env.HELLO_WORLD)
                     }
                 }
                 sh 'docker run hello-world'
@@ -110,7 +111,7 @@ pipeline {
     }
 }
 
-def sshRemoteDockerPull(host) {
+def sshRemoteDockerPull(host, imageTag) {
     def remote = [:]
     remote.name = host
     remote.host = host
@@ -123,7 +124,7 @@ def sshRemoteDockerPull(host) {
         // sshCommand(remote: remote, command: 'for i in {1..5}; do echo -n \"Loop \$i \"; date ; sleep 1; done')
 
         writeFile file: 'abc.sh', text: """
-            docker pull hello-world
+            docker pull ${imageTag}
             docker images
         """
         sshScript remote: remote, script: 'abc.sh'
