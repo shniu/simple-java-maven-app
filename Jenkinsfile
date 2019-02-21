@@ -30,7 +30,7 @@ pipeline {
 
     stages {
         stage('Prepare') {
-            stage {
+            steps {
                 script {
                     if (!fileExists(file:  env.PASSWD_FILE)) {
                         dir('~/.docker') {
@@ -40,6 +40,7 @@ pipeline {
                 }
             }
         }
+
         stage('Build') {
             agent {
                 docker {
