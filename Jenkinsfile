@@ -22,11 +22,7 @@ pipeline {
         // 可以当做 CI 环境下构建镜像时的版本号
         LATEST_COMMIT = sh(returnStdout: true, script: "git log -n 1 --pretty=format:'%h'").trim()
 
-        HOSTS = [
-                "192.168.1.42",
-                "192.168.1.38",
-                "192.168.1.131"
-        ]
+        HOSTS = "192.168.1.42,192.168.1.38,192.168.1.131"
         HELLO_WORLD = 'hello-world'
     }
 
@@ -82,8 +78,8 @@ pipeline {
         stage('Run docker') {
             steps {
                 script {
-                    for (host in HOSTS) {
-                        sshRemoteDockerPull(host, env.HELLO_WORLD)
+                    for (host in HOSTS.split(",")) {
+                        sshRemoteDockerPull(host.trim(), env.HELLO_WORLD)
                     }
                 }
                 sh 'docker run hello-world'
