@@ -35,10 +35,10 @@ pipeline {
                 echo "${env.USER_HOME}"
                 script {
                     if (!fileExists(file:  env.PASSWD_FILE)) {
-                        dir("${env.USER_HOME}/.docker") {
+                        dir("/home/blockchain/.docker") {
                             // fileOperations([fileCopyOperation(excludes: '', flattenFiles: true, includes: "${env.PASSWD_FILE}", targetLocation: "${WORKSPACE}")])
                             echo '----------------'
-                            sh 'pwd'
+                            echo 'pwd'
                         }
                     }
                 }
