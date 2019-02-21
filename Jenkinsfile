@@ -117,9 +117,11 @@ def sshRemoteDockerPull(host, imageTag) {
         remote.user = username
         remote.password = password
 
-        // sshCommand(remote: remote, command: 'for i in {1..5}; do echo -n \"Loop \$i \"; date ; sleep 1; done')
+        sshCommand(remote: remote, command: 'mkdir -p ~/.docker')
+        sshPut remote: remote, from: '~/.docker/epuchain.txt', into: '~/.docker'
 
         writeFile file: 'abc.sh', text: """
+            cat ~/.docker/epuchain.txt | docker login --username=epuchain registry.cn-beijing.aliyuncs.com --password-stdin
             docker pull ${imageTag}
             docker images
         """
