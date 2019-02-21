@@ -21,6 +21,12 @@ pipeline {
         PWD_DIR = sh(returnStdout: true, script: 'pwd').trim()
         // 可以当做 CI 环境下构建镜像时的版本号
         LATEST_COMMIT = sh(returnStdout: true, script: "git log -n 1 --pretty=format:'%h'").trim()
+
+        HOSTS = [
+                "192.168.1.42",
+                "192.168.1.38",
+                "192.168.1.131"
+        ]
     }
 
     stages {
@@ -75,9 +81,9 @@ pipeline {
         stage('Run docker') {
             steps {
                 script {
-                    sshRemoteDockerPull("192.168.1.124")
-                    sshRemoteDockerPull("192.168.1.38")
-                    sshRemoteDockerPull("192.168.1.131")
+                    for (host in HOSTS) {
+                        sshRemoteDockerPull(host)
+                    }
                 }
                 sh 'docker run hello-world'
             }
@@ -114,12 +120,12 @@ def sshRemoteDockerPull(host) {
         remote.user = username
         remote.password = password
 
-        sshCommand(remote: remote, command: 'for i in {1..5}; do echo -n \"Loop \$i \"; date ; sleep 1; done')
+        // sshCommand(remote: remote, command: 'for i in {1..5}; do echo -n \"Loop \$i \"; date ; sleep 1; done')
 
         writeFile file: 'abc.sh', text: """
-                            docker info
-                            docker pull hello-world
-                        """
+            docker pull hello-world
+            docker images
+        """
         sshScript remote: remote, script: 'abc.sh'
     }
 }
