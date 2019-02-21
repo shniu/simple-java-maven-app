@@ -26,16 +26,16 @@ pipeline {
         HELLO_WORLD = 'hello-world'
 
         PASSWD_FILE = 'epuchain.txt'
-        USER_HOME = sh(returnStdout: true, script: 'echo ${HOME}')
     }
 
     stages {
         stage('Prepare') {
             steps {
-                echo "${env.USER_HOME}"
                 script {
+                    def home = sh(returnStdout: true, script: 'echo ${HOME}')
+                    echo "----- $home"
                     if (!fileExists(file:  env.PASSWD_FILE)) {
-                        dir("/home/blockchain/.docker") {
+                        dir("$home/.docker") {
                             // fileOperations([fileCopyOperation(excludes: '', flattenFiles: true, includes: "${env.PASSWD_FILE}", targetLocation: "${WORKSPACE}")])
                             echo '----------------'
                             echo 'pwd'
@@ -135,7 +135,7 @@ def sshRemoteDockerPull(host, imageTag) {
         remote.user = username
         remote.password = password
 
-        sshCommand(remote: remote, command: 'mkdir -p ~/.docker')
+        sshCommand(remote: remote, command: 'mkdir -p ~/.docker && touch ~/.docker/epuchain.txt')
         dir("/home/blockchain/.docker") {
             sshPut remote: remote, from: 'epuchain.txt', into: '~/.docker'
         }
