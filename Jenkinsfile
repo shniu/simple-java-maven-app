@@ -25,11 +25,11 @@ pipeline {
         HOSTS = "192.168.1.42,192.168.1.38,192.168.1.131"
         HELLO_WORLD = 'hello-world'
 
-        PASSWD_FILE = 'epuchain.txt'
+        // PASSWD_FILE = 'epuchain.txt'
     }
 
     stages {
-        stage('Prepare') {
+        /*stage('Prepare') {
             steps {
                 script {
                     def home = sh(returnStdout: true, script: 'env | grep ^HOME= | cut -c 6-')
@@ -44,7 +44,7 @@ pipeline {
                     }
                 }
             }
-        }
+        }*/
 
         stage('Build') {
             agent {
@@ -136,18 +136,20 @@ def sshRemoteDockerPull(host, imageTag) {
         remote.user = username
         remote.password = password
 
-        sshCommand(remote: remote, command: 'mkdir -p ~/.docker && touch ~/.docker/epuchain.txt')
-        /*dir("/home/blockchain/.docker") {
-
+        /*sshCommand(remote: remote, command: 'mkdir -p ~/.docker')
+        dir("/home/$username/.docker") {
+            sshPut remote: remote, from: "${env.PASSWD_FILE}", into: "/home/$username/.docker"
         }*/
-        sshPut remote: remote, from: 'echo.sh', into: '/home/blockchain/.docker'
 
-        writeFile file: 'abc.sh', text: """
-            cat ~/.docker/epuchain.txt | docker login --username=epuchain registry.cn-beijing.aliyuncs.com --password-stdin
-            docker pull ${imageTag}
-            docker images
-        """
-        sshScript remote: remote, script: 'abc.sh'
+        withCredentials([usernamePassword(credentialsId: 'epuchainOfAliDockerHub', usernameVariable: 'aliUser', passwordVariable: 'aliPasswd')]) {
+            writeFile file: 'docker_pull.sh', text: """
+                docker login --username=${aliUser} --password=${aliPasswd} registry.cn-beijing.aliyuncs.com
+                docker pull ${imageTag}
+                docker images
+            """
+            sshScript remote: remote, script: 'docker_pull.sh'
+        }
+
     }
 }
 
