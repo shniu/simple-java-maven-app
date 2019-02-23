@@ -97,9 +97,9 @@ pipeline {
         stage('Run docker') {
             steps {
                 script {
-                    for (host in HOSTS.split(",")) {
+                    /*for (host in HOSTS.split(",")) {
                         sshRemoteDockerPull(host.trim(), env.HELLO_WORLD)
-                    }
+                    }*/
                 }
                 sh 'docker run hello-world'
             }
@@ -109,6 +109,7 @@ pipeline {
     post {
         always {
             echo 'This will always run'
+            sh 'docker ps -a | grep 'hello-world' | awk '{print $1}' | xargs --no-run-if-empty docker rm'
         }
         success {
             echo 'This will run only if successful'
@@ -143,7 +144,7 @@ def sshRemoteDockerPull(host, imageTag) {
 
         withCredentials([usernamePassword(credentialsId: 'epuchainOfAliDockerHub', usernameVariable: 'aliUser', passwordVariable: 'aliPasswd')]) {
             writeFile file: 'docker_pull.sh', text: """
-                docker login --username=${aliUser} --password=${aliPasswd} registry.cn-beijing.aliyuncs.com
+                echo ${aliPasswd} | docker login --username=${aliUser} --password-stdin registry.cn-beijing.aliyuncs.com
                 docker pull ${imageTag}
                 docker images
             """
