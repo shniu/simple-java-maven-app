@@ -109,7 +109,7 @@ pipeline {
     post {
         always {
             echo 'This will always run'
-            sh "docker ps -a | grep 'hello-world' | awk '{print $1}' | xargs --no-run-if-empty docker rm"
+            sh "docker ps -a | grep 'hello-world' | awk '{print \$1}' | xargs --no-run-if-empty docker rm"
         }
         success {
             echo 'This will run only if successful'
