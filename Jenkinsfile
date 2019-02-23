@@ -96,11 +96,11 @@ pipeline {
 
         stage('Run docker') {
             steps {
-                script {
-                    /*for (host in HOSTS.split(",")) {
+                /*script {
+                    for (host in HOSTS.split(",")) {
                         sshRemoteDockerPull(host.trim(), env.HELLO_WORLD)
-                    }*/
-                }
+                    }
+                }*/
                 sh 'docker run hello-world'
             }
         }
