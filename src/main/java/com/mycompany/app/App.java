@@ -6,13 +6,12 @@ package com.mycompany.app;
 public class App
 {
 
-    private final String message = "Hello World!";
+    private final String message = "This is test for multibranch!";
 
     public App() {}
 
     public static void main(String[] args) {
         System.out.println(new App().getMessage());
-        System.out.println("This is a test multibranch!");
     }
 
     private final String getMessage() {
